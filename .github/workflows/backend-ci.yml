@@ -1,0 +1,50 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: todo_user
+          POSTGRES_PASSWORD: todo_pass
+          POSTGRES_DB: todo_db
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U todo_user"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql+psycopg2://todo_user:todo_pass@localhost:5432/todo_db
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests (поставь pytest если хочешь тесты)
+        run: |
+          echo "Тестов пока нет"
+
+      - name: Build Docker image
+        run: |
+          docker build -t fastapi-todo-app ./backend
