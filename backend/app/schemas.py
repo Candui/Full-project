@@ -6,9 +6,12 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     pass
 
+class TaskUpdate(BaseModel):
+    done: bool
+
 class Task(TaskBase):
     id: int
-    done: bool = False
+    done: bool
 
     class Config:
-        from_attributes = True  # для Pydantic v2, раньше было orm_mode = True
+        from_attributes = True  # для pydantic v2, вместо orm_mode
