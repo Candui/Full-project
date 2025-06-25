@@ -1,0 +1,41 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+
+build_backend:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t my-backend ./backend
+
+build_frontend:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t my-frontend ./frontend
+
+test_backend:
+  stage: test
+  image: python:3.10
+  script:
+    - cd backend
+    - pip install -r requirements.txt
+    - pytest
+
+test_frontend:
+  stage: test
+  image: node:20
+  script:
+    - cd frontend
+    - npm ci
+    - npm test
+
