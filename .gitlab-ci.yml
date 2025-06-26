@@ -57,7 +57,8 @@ deploy:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
     - chmod 600 ~/.ssh/id_ed25519
     # Добавляем сервер в known_hosts
-    - echo "$DEPLOY_SERVER_IP" | ssh-keyscan -t ed25519 >> ~/.ssh/known_hosts
+    - ssh-keyscan -t ed25519 "$DEPLOY_SERVER_IP" >> ~/.ssh/known_hosts
+
     - chmod 600 ~/.ssh/known_hosts
     # Деплой через SSH
     - echo "Deploying to server..."
