@@ -44,7 +44,6 @@ deploy:
   stage: deploy
   image: alpine:latest
   before_script:
-    # SSH setup
     - apk add --no-cache openssh git docker-cli docker-compose
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
@@ -52,20 +51,23 @@ deploy:
     - ssh-keyscan -t ed25519 "$DEPLOY_SERVER_IP" >> ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
   script:
-    # Клонируем или обновляем проект на сервере
+    - echo "DEPLOY_SERVER_IP = $DEPLOY_SERVER_IP"
+    - echo "PRIVATE_REPOSITORY = $PRIVATE_REPOSITORY"
     - |
-      ssh -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP 
-        set -e
+      ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes user1@$DEPLOY_SERVER_IP 'bash -s' <<'ENDSSH'
+        set -ex
         if [ ! -d "/home/user1/app/.git" ]; then
-          git clone --depth 1 https://github.com/Candui/Full-project /home/user1/app
+          echo "Cloning repository..."
+          git clone --depth 1 "$PRIVATE_REPOSITORY" /home/user1/app
         else
+          echo "Pulling latest changes..."
           cd /home/user1/app && git pull
         fi
         cd /home/user1/app
+        echo "Pulling Docker images..."
         docker-compose pull || true
+        echo "Restarting containers..."
+        docker-compose up -d
         echo "Deployment successful at $(date)" > /home/user1/app/deploy_success.txt
-      
-
-      
-      
-
+        echo "Deployment done!"
+      ENDSSH
