@@ -52,6 +52,12 @@ test_frontend:
 deploy:
   stage: deploy
   script:
+    - whoami
+    - hostname
+    - ls -l ~/.ssh/
+    - cat ~/.ssh/id_ed25519 | head -n 10
+    - ssh -v -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP "echo hi"
+
     - mkdir -p ~/.ssh
     # Добавляем приватный ключ для SSH
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
