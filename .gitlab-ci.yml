@@ -63,6 +63,8 @@ deploy:
     # Добавляем сервер в known_hosts
     - echo "$DEPLOY_SERVER_IP" | ssh-keyscan -t ed25519 >> ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
+    # Тестируем SSH-подключение
+    - ssh -T -i ~/.ssh/id_ed25519 user@$DEPLOY_SERVER_IP
     # Деплой через SSH
     - ssh -i ~/.ssh/id_ed25519 user@$DEPLOY_SERVER_IP "cd /path/to/app && git pull && docker-compose up -d --build"
   only:
