@@ -51,7 +51,7 @@ test_frontend:
 deploy:
   stage: deploy
   script:
-    # Настройка директории SSH
+    
     - mkdir -p ~/.ssh
     # Добавляем приватный ключ для SSH
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
@@ -62,6 +62,6 @@ deploy:
     # Деплой через SSH
     - echo "Deploying to server..."
     - ssh -i ~/.ssh/id_ed25519 user@$DEPLOY_SERVER_IP "cd /path/to/app && git pull && docker-compose up -d --build && echo 'Deployment successful at $(date)'"
-    - echo "Deployment logs: Deployment successful at $(date)"
+    - echo " Deployment successful at $(date)"
   only:
     - master
