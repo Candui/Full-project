@@ -63,8 +63,9 @@ deploy:
         fi
         cd /home/user1/app
         docker-compose pull || true
-        docker-compose up -d --build
         echo "Deployment successful at $(date)" > /home/user1/app/deploy_success.txt
+      
+
       
       
 
