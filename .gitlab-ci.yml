@@ -62,5 +62,5 @@ deploy:
     - chmod 600 ~/.ssh/known_hosts
     # Деплой через SSH
     - echo "Deploying to server..."
-    - ssh -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP "cd /path/to/app && git pull && echo 'Deployment successful at $(date)' > /path/to/app/deploy_success.txt"
+    - ssh -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP "cd /home/user1/app && git pull && echo 'Deployment successful at $(date)' > /home/user1/app/deploy_success.txt"
 
