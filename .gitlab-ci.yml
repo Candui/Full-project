@@ -48,12 +48,8 @@ test_frontend:
     - npm ci
     - echo "Frontend test stage complete"
 
-# Деплой на сервер
 deploy:
   stage: deploy
-  image: docker:latest
-  services:
-    - docker:dind
   script:
     # Настройка директории SSH
     - mkdir -p ~/.ssh
@@ -63,9 +59,9 @@ deploy:
     # Добавляем сервер в known_hosts
     - echo "$DEPLOY_SERVER_IP" | ssh-keyscan -t ed25519 >> ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
-    # Тестируем SSH-подключение
-    - ssh -T -i ~/.ssh/id_ed25519 user@$DEPLOY_SERVER_IP
     # Деплой через SSH
-    - ssh -i ~/.ssh/id_ed25519 user@$DEPLOY_SERVER_IP "cd /path/to/app && git pull && docker-compose up -d --build"
+    - echo "Deploying to server..."
+    - ssh -i ~/.ssh/id_ed25519 user@$DEPLOY_SERVER_IP "cd /path/to/app && git pull && docker-compose up -d --build && echo 'Deployment successful at $(date)'"
+    - echo "Deployment logs: Deployment successful at $(date)"
   only:
     - master
