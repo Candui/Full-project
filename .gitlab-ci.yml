@@ -52,8 +52,8 @@ deploy:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
     - chmod 600 ~/.ssh/id_ed25519
-    - ssh-keyscan -t ed25519 "$DEPLOY_SERVER_IP" >> ~/.ssh/authorized_keys
-    - chmod 600 ~/.ssh/authorized_keys
+    - ssh-keyscan -t ed25519 "$DEPLOY_SERVER_IP" >> ~/.ssh/known_hosts
+    - chmod 600 ~/.ssh/known_hosts
   script:
     # Клонируем или обновляем проект на сервере
     - |
