@@ -57,7 +57,7 @@ deploy:
   script:
     # Клонируем или обновляем проект на сервере
     - |
-      ssh -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP '
+      ssh -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP 
         set -e
         if [ ! -d "/home/user1/app/.git" ]; then
           git clone --depth 1 https://github.com/Candui/Full-project /home/user1/app
@@ -65,8 +65,9 @@ deploy:
           cd /home/user1/app && git pull
         fi
         cd /home/user1/app
-        docker compose pull || true
-        docker compose up -d --build
+        docker-compose pull || true
+        docker-compose up -d --build
         echo "Deployment successful at $(date)" > /home/user1/app/deploy_success.txt
-      '
+      
+      
 
