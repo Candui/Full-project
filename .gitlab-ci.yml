@@ -60,7 +60,7 @@ deploy:
       ssh -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP '
         set -e
         if [ ! -d "/home/user1/app/.git" ]; then
-          git clone --depth 1 <https://github.com/Candui/Full-project> /home/user1/app
+          git clone --depth 1 https://github.com/Candui/Full-project /home/user1/app
         else
           cd /home/user1/app && git pull
         fi

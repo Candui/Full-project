@@ -8,25 +8,8 @@
       apt:
         update_cache: yes
         name:
-          - python3
-          - python3-pip
-          - python3-venv
-          - build-essential
-          - libpq-dev
-          - nodejs
-          - npm
+          - docker
         state: present
 
-    - name: Install backend Python dependencies
-      pip:
-        requirements: "{{ project_root }}/backend/requirements.txt"
-        virtualenv: "{{ project_root }}/venv"
-        virtualenv_python: python3
 
-    - name: Install root Node dependencies
-      npm:
-        path: "{{ project_root }}"
 
-    - name: Install frontend Node dependencies
-      npm:
-        path: "{{ project_root }}/frontend"
