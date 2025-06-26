@@ -10,7 +10,9 @@ variables:
 # Сборка бэкенда
 build_backend:
   stage: build
-
+  image: docker:latest
+  services:
+    - docker:dind
   script:
     - echo "Building backend..."
     - docker build -t my-backend ./backend
