@@ -51,14 +51,15 @@ test_frontend:
 # Деплой на сервер
 deploy:
   stage: deploy
-  image: ruby:3.1  # Можно любой, где есть ssh, например alpine или debian
   script:
     - mkdir -p ~/.ssh
-    # Приватный ключ
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/full
-    - chmod 600 ~/.ssh/full
-    # known_hosts (можно добавить ssh-keyscan)
-    - ssh-keyscan -t ed25519 $DEPLOY_SERVER_IP >> ~/.ssh/known_hosts
+    # Добавляем приватный ключ для SSH
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    # Добавляем сервер в known_hosts
+    - ssh-keyscan -t ed25519 "$DEPLOY_SERVER_IP" >> ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
-    # Деплой
-    - ssh -i ~/.ssh/full user1@$DEPLOY_SERVER_IP "cd /path/to/app && git pull &&  echo 'Deployment successful at $(date)' > /path/to/app/deploy_success.txt"
+    # Деплой через SSH
+    - echo "Deploying to server..."
+    - ssh -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP "cd /path/to/app && git pull && echo 'Deployment successful at $(date)' > /path/to/app/deploy_success.txt"
+
