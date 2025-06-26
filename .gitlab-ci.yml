@@ -7,7 +7,6 @@ variables:
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
 
-# Сборка бэкенда
 build_backend:
   stage: build
   image: docker:latest
@@ -16,9 +15,7 @@ build_backend:
   script:
     - echo "Building backend..."
     - docker build -t my-backend ./backend
-    - docker images  # Выводим список собранных изображений
 
-# Сборка фронтенда
 build_frontend:
   stage: build
   image: docker:latest
@@ -27,14 +24,12 @@ build_frontend:
   script:
     - echo "Building frontend..."
     - docker build -t my-frontend ./frontend
-    - docker images  # Выводим список собранных изображений
 
-# Проверка (этап тестов, но мы просто убедимся, что пайплайн работает)
 test_backend:
   stage: test
   image: python:3.10
   script:
-    - echo "Testing backend (проверка работы пайплайна)"
+    - echo "Testing backend"
     - cd backend
     - pip install -r requirements.txt
     - echo "Backend test stage complete"
@@ -43,24 +38,35 @@ test_frontend:
   stage: test
   image: node:20
   script:
-    - echo "Testing frontend (проверка работы пайплайна)"
+    - echo "Testing frontend"
     - cd frontend
     - npm ci
     - echo "Frontend test stage complete"
 
-# Деплой на сервер
 deploy:
   stage: deploy
-  script:
-    
+  image: alpine:latest
+  before_script:
+    # SSH setup
+    - apk add --no-cache openssh git docker-cli docker-compose
     - mkdir -p ~/.ssh
-    # Добавляем приватный ключ для SSH
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
     - chmod 600 ~/.ssh/id_ed25519
-    # Добавляем сервер в known_hosts
     - ssh-keyscan -t ed25519 "$DEPLOY_SERVER_IP" >> ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
-    # Деплой через SSH
-    - echo "Deploying to server..."
-    - ssh -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP "cd /home/user1/app && echo 'Deployment successful at $(date)' > /home/user1/app/deploy_success.txt"
+  script:
+    # Клонируем или обновляем проект на сервере
+    - |
+      ssh -i ~/.ssh/id_ed25519 user1@$DEPLOY_SERVER_IP '
+        set -e
+        if [ ! -d "/home/user1/app/.git" ]; then
+          git clone --depth 1 <https://github.com/Candui/Full-project> /home/user1/app
+        else
+          cd /home/user1/app && git pull
+        fi
+        cd /home/user1/app
+        docker compose pull || true
+        docker compose up -d --build
+        echo "Deployment successful at $(date)" > /home/user1/app/deploy_success.txt
+      '
 
