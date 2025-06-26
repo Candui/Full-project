@@ -48,10 +48,10 @@ test_frontend:
     - npm ci
     - echo "Frontend test stage complete"
 
+# Деплой на сервер
 deploy:
   stage: deploy
   script:
-    
     - mkdir -p ~/.ssh
     # Добавляем приватный ключ для SSH
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
@@ -61,7 +61,6 @@ deploy:
     - chmod 600 ~/.ssh/known_hosts
     # Деплой через SSH
     - echo "Deploying to server..."
-    - ssh -i ~/.ssh/id_ed25519 user@$DEPLOY_SERVER_IP "cd /path/to/app && git pull && docker-compose up -d --build && echo 'Deployment successful at $(date)'"
-    - echo " Deployment successful at $(date)"
-  only:
-    - master
+    - ssh -i ~/.ssh/id_ed25519 user@$DEPLOY_SERVER_IP "cd /path/to/app && git pull && docker-compose up -d --build && echo 'Deployment successful at $(date)' > /path/to/app/deploy_success.txt"
+    # Отображаем сообщение об успешном деплое
+    - echo "Deployment successful at $(date)"
