@@ -3,14 +3,16 @@ import React, { useEffect, useState } from "react";
 function App() {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
-  const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
+  // base url убираем, всегда работаем с относительными путями
+  const apiPrefix = "/api";
 
   useEffect(() => {
     fetchTasks();
   }, []);
 
   const fetchTasks = () => {
-    fetch(`${apiUrl}/tasks`)
+    fetch(`${apiPrefix}/tasks`)
       .then((res) => res.json())
       .then(setTasks)
       .catch((err) => console.error("API fetch error:", err));
@@ -19,7 +21,7 @@ function App() {
   const addTask = (e) => {
     e.preventDefault();
     if (!newTask.trim()) return;
-    fetch(`${apiUrl}/tasks`, {
+    fetch(`${apiPrefix}/tasks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: newTask }),
@@ -27,22 +29,24 @@ function App() {
       .then(() => {
         setNewTask("");
         fetchTasks();
-      });
+      })
+      .catch((err) => console.error("Add task error:", err));
   };
 
   const deleteTask = (id) => {
-    fetch(`${apiUrl}/tasks/${id}`, { method: "DELETE" })
-      .then(fetchTasks);
+    fetch(`${apiPrefix}/tasks/${id}`, { method: "DELETE" })
+      .then(fetchTasks)
+      .catch((err) => console.error("Delete task error:", err));
   };
 
-  // === PATCH ===
   const toggleDone = (id, currentDone) => {
-    fetch(`${apiUrl}/tasks/${id}`, {
+    fetch(`${apiPrefix}/tasks/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ done: !currentDone }),
     })
-      .then(fetchTasks);
+      .then(fetchTasks)
+      .catch((err) => console.error("Toggle done error:", err));
   };
 
   return (
